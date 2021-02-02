@@ -106,14 +106,35 @@ const renderContries = function (data, countryName) {
 const getCountry = function (country) {
   // return promisses - Objeto que contém dados sobre o request, then (Request foi aceito e retornou uma promisses com os dados solicitados)
   fetch(`https://restcountries.eu/rest/v2/name/${country}`)
-    .then(response => response.json()) // o metodo .json() retorna uma promisse que contém os dados obtidos no fetch
+    .then(
+      response => response.json(),
+      err => console.log(err.message)
+    ) // o metodo .json() retorna uma promisse que contém os dados obtidos no fetch
     .then(data => {
       renderContries(data[0], '');
       const [neighbour] = data[0].borders;
       return fetch(`https://restcountries.eu/rest/v2/alpha/${neighbour}`);
     })
     .then(response => response.json())
-    .then(data => renderContries(data, 'neighbour'));
+    .then(data => renderContries(data, 'neighbour'))
+    .catch(err => {
+      countriesContainer.insertAdjacentText('afterbegin', `${err.message}`);
+    }) // identifica error de maneira global, ou seja, erros que ocorrem em toda chain promisse.
+    .finally(() => (countriesContainer.style.opacity = 1)); // função é executada sempre, independendo do resultado da requisição (failed or sucess)
 };
 
-getCountry('Brazil');
+// Handle errors in promisses só são disparados quando o usuário perde a conexão de internet - promisses não foram preenchidas
+
+/* 
+
+Promisses.them(sucess func,err func): Chama a callback do segundo parametro para os erros que ocorrem na promisse que chamou o metodo 
+
+Promisses.catch(): Chama uma callback para todo erro de fetch da promisse chain
+
+Promisses.finally(): Metodo da promisses que sempre executa a callback, independendo do resultado do request
+
+*/
+
+btn.addEventListener('click', function () {
+  getCountry('Brazil');
+});
