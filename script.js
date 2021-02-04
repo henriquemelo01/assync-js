@@ -144,10 +144,10 @@ Promisses.finally(): Metodo da promisses que sempre executa a callback, independ
 
 */
 
-btn.addEventListener('click', function () {
-  getCountry('Australia');
-  countriesContainer.innerHTML = '';
-});
+// btn.addEventListener('click', function () {
+//   getCountry('Australia');
+//   countriesContainer.innerHTML = '';
+// });
 
 // A callback do erro não é disparada se fizermos um fetch de uma pagina que não existe/não pode ser encontrada - 404, para corrig"irmos tal limitação, vamos definir a callback para este erro manualmente. In this case, the propertie ok of the promise that was returned by fetch() is false.
 
@@ -234,53 +234,53 @@ Test data:
 
 
 
-const whereAmI = function (lat, long) {
+// const whereAmI = function (lat, long) {
 
-  const coords = [lat,long];
+//   const coords = [lat,long];
  
-  // fetch data
-  fetch(`https://geocode.xyz/${coords}?geoit=json`)
-    .then((response) => {
-        if (response.status === 403)
-          throw new Error(`You are reloading the page soo fast : ${response.status}`)
+//   // fetch data
+//   fetch(`https://geocode.xyz/${coords}?geoit=json`)
+//     .then((response) => {
+//         if (response.status === 403)
+//           throw new Error(`You are reloading the page soo fast : ${response.status}`)
 
-        if (!response.ok)
-          throw new Error(`Cannot found the current location : ${response.status}`);  
+//         if (!response.ok)
+//           throw new Error(`Cannot found the current location : ${response.status}`);  
 
-        // Como response é o body do HTML request , converte-se o JSON em objeto usando o metodo .json() 
-        return response.json();
-    })
-    .then((data) => {
-      // console.log(data);
-      console.log(`You are in ${data.city}, ${data.country}`)
-      return fetch(`https://restcountries.eu/rest/v2/name/${data.country}?fullText=true`)
-    })
-    .then((res) => {
-      if(!res.ok)
-        throw new Error(`Cannot found the current location: ${res.status}`);
-      return res.json()
-    })
-    .then((data) => {
-      const [country] = data;
-      renderContries(country, "");
-    })
-    .catch((err) => console.log(`Something went wrong 💣💣 : ${err.message}`));
-}
+//         // Como response é o body do HTML request , converte-se o JSON em objeto usando o metodo .json() 
+//         return response.json();
+//     })
+//     .then((data) => {
+//       // console.log(data);
+//       console.log(`You are in ${data.city}, ${data.country}`)
+//       return fetch(`https://restcountries.eu/rest/v2/name/${data.country}?fullText=true`)
+//     })
+//     .then((res) => {
+//       if(!res.ok)
+//         throw new Error(`Cannot found the current location: ${res.status}`);
+//       return res.json()
+//     })
+//     .then((data) => {
+//       const [country] = data;
+//       renderContries(country, "");
+//     })
+//     .catch((err) => console.log(`Something went wrong 💣💣 : ${err.message}`));
+// }
 
-whereAmI(52.508, 13.381);
-whereAmI(19.037, 72.873);
-whereAmI(-33.933, 18.474);
+// whereAmI(52.508, 13.381);
+// whereAmI(19.037, 72.873);
+// whereAmI(-33.933, 18.474);
 
 // Geolocation API 
 
-setTimeout(() => {
-  navigator.geolocation.getCurrentPosition((geolocation) => {
+// setTimeout(() => {
+//   navigator.geolocation.getCurrentPosition((geolocation) => {
 
-    const {latitude,longitude} = geolocation.coords;
-    whereAmI(latitude,longitude);
+//     const {latitude,longitude} = geolocation.coords;
+//     whereAmI(latitude,longitude);
   
-  }, () => alert("Error"))
-},2000)
+//   }, () => alert("Error"))
+// },2000)
 
 // Assyncronos Behind the scenes: 
 
@@ -342,5 +342,48 @@ wait(2).then(() => {
 console.log("I wil be executed first")
 
 // Promisifying the Geolocation API 
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    // navigator.geolocation.getCurrentPosition(
+    //   position => resolve(position),
+    //   err => reject(err)
+    // )
+    navigator.geolocation.getCurrentPosition(resolve,reject);
+  })
+}
 
+const whereAmI = function () {
+
+  getPosition().then((pos) => {
+    const {latitude: lat , longitude : lng} = pos.coords
+    return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+  })
+    .then((response) => {
+        if (response.status === 403)
+          throw new Error(`You are reloading the page soo fast : ${response.status}`)
+
+        if (!response.ok)
+          throw new Error(`Cannot found the current location : ${response.status}`);  
+
+        // Como response é o body do HTML request , converte-se o JSON em objeto usando o metodo .json() 
+        return response.json();
+    })
+    .then((data) => {
+      // console.log(data);
+      console.log(`You are in ${data.city}, ${data.country}`)
+      return fetch(`https://restcountries.eu/rest/v2/name/${data.country}?fullText=true`)
+    })
+    .then((res) => {
+      if(!res.ok)
+        throw new Error(`Cannot found the current location: ${res.status}`);
+      return res.json()
+    })
+    .then((data) => {
+      const [country] = data;
+      renderContries(country, "");
+    })
+    .catch((err) => console.log(`Something went wrong 💣💣 : ${err.message}`));
+}
+
+btn.addEventListener("click",whereAmI)
 
