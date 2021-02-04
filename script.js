@@ -271,9 +271,76 @@ whereAmI(52.508, 13.381);
 whereAmI(19.037, 72.873);
 whereAmI(-33.933, 18.474);
 
-navigator.geolocation.getCurrentPosition((geolocation) => {
+// Geolocation API 
 
-  const {latitude,longitude} = geolocation.coords;
-  whereAmI(latitude,longitude);
+setTimeout(() => {
+  navigator.geolocation.getCurrentPosition((geolocation) => {
 
-}, () => alert("Error"))
+    const {latitude,longitude} = geolocation.coords;
+    whereAmI(latitude,longitude);
+  
+  }, () => alert("Error"))
+},2000)
+
+// Assyncronos Behind the scenes: 
+
+// Events: Event Handler (Callback) -> Web API's enviroment -> Quando a operação assincrona é finaliza -> CallBack Queue -> (CallStack === "") ? Event Handler da Callback Queue -> Call Stack (Execução) : Wait call stack to be empty 
+
+// AJAX : AJAX CALLS -> Web API's enviroment -> Quando a operação assincrona é finaliza -> Microtasks Queue -> (CallStack === "") ? AJAX operation da Microtasks Queue -> Call Stack (Execução) : Wait call stack to be empty
+
+// OBS: Microtasks possuem prioridade em relação a CallBack
+
+// Ex: Números representam a ordem de execução
+
+// console.log("Test start"); // 1
+// setTimeout(() => console.log("0 sec timer"),0); // 4
+
+// Criando uma promise que é sempre bem sucedida
+// Promise.resolve("Resolved promise 1").then(res => console.log(res)); //3
+// console.log("Test end"); // 2
+
+// Ex: Como as microtask serão executadas como prioridade, ao utilizarmos o setTimeout que esta na Callback Queue ele pode ser executado após o tempo passado como parâmetro caso a microtask exija um tempo considerável para ser executada 
+
+// setTimeout(() => console.log("0 sec timer"),0); // delay de +- 1 sec
+// Promise.resolve("Resolved promise").then((res) => {
+//   for(let i = 0; i < 1000000000 ; i++) {}
+// })
+
+// Building Promises 
+
+const lotteryPromise = new Promise(function (resolve,reject) {
+  // Executor function -> Defini o comportamento do resultado da operação async
+
+  console.log("Lotter draw is happening 🔮")
+  // Aplicando comportamento Async a promise
+  setTimeout( function () {
+    if(Math.random() >= 0.5) {
+      // Promise fullfiled
+      resolve("You win 💰")
+    } else {
+      // Promise Rejected
+      reject(new Error("You lost your money 💩")) // <- err 
+    }
+  }, 2000)
+  
+})
+
+lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
+
+// Na maior parte do tempo vamos apenas consumir promises (EX: Uso de uma API). Entrentanto, criando uma promise podemos forçar uma função a ter um comportamento assincrono, retornando uma promise
+
+const wait = function (sec) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, sec * 1000);
+  });
+};
+
+wait(2).then(() => {
+  console.log("I waited for 2 seconds");
+})
+
+console.log("I wil be executed first")
+
+// Promisifying the Geolocation API 
+
+
