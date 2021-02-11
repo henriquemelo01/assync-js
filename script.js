@@ -479,7 +479,7 @@ otherwise images load too fast
   }
 
 
-
+// async function always return a promisse 
   const whereAmIAsync = async function () {
     try {
       const {coords} = await getPosition2();
@@ -503,23 +503,34 @@ otherwise images load too fast
         throw new Error("Failed to get the data of rest countries api");
       const [responseCountry] = await dataCountry.json()
       renderContries(responseCountry);
+      return `You are in ${dataGeo.city}, ${dataGeo.country}`;
+
+      // catch has acess to every error that ocorred in the try block . 
+
     } catch (err) {
       console.error(err.message);
       renderError(`${err.message}`)
+
+      // Reject promise returned from async function 
+      throw err;
     }
 
   }
 
+// Obs: Mesmo se houver um erro na async function e a promise não for preenchida, o then é executado. Assim add throw error ao catch para corrigir o problema. 
+// whereAmIAsync()
+//   .then(city => console.log(city))
+//   .catch(err => console.error(`${err.message}`))
+//   .finally(() => "Finisheed getting location");
 
-// catch has acess to every error that ocorred in the try block . 
-/*
-try {
-  const y = 3;
-  y = 10; 
-
-  
-} catch (err) {
-  alert(err.message);
-}
-
-*/
+// Calling async function when the script runs
+(async function () {
+  try {
+    const city = await whereAmIAsync();
+    console.log(city);
+  } catch (err) {
+    console.error(`${err.message}`);
+  }
+  // Finally
+  console.log(".finally()");
+})();
