@@ -524,13 +524,40 @@ otherwise images load too fast
 //   .finally(() => "Finisheed getting location");
 
 // Calling async function when the script runs
-(async function () {
+// (async function () {
+//   try {
+//     const city = await whereAmIAsync();
+//     console.log(city);
+//   } catch (err) {
+//     console.error(`${err.message}`);
+//   }
+//   // Finally
+//   console.log(".finally()");
+// })();
+
+
+// Running promises in parallel :
+
+const get3Country = async function (c1,c2,c3) {
   try {
-    const city = await whereAmIAsync();
-    console.log(city);
+    // Como uma requisição não depende da outra, não faz sentido acessar os dados da forma abaixo
+    // const [data1] = await getJSON(`https://restcountries.eu/rest/v2/name/${c1}`);
+    // const [data2] = await getJSON(`https://restcountries.eu/rest/v2/name/${c2}`)
+    // const [data3] = await getJSON(`https://restcountries.eu/rest/v2/name/${c3}`)
+
+    // O metodo .all do constructor Promise recebe um array que contém promises e retorna uma nova promise que irá executar de forma paralela todas as promises contidas no array e preenche a promise retornada com a resposta das promises. 
+
+    const data = await Promise.all([getJSON(`https://restcountries.eu/rest/v2/name/${c1}`), getJSON(`https://restcountries.eu/rest/v2/name/${c2}`), getJSON(`https://restcountries.eu/rest/v2/name/${c3}`)]);
+
+    // Obtendo os Dados usando destructuring
+    // const [[data1],[data2],[data3]] = data;
+
+    // Obtendo os dados usando map
+    console.log(data.map(d => d[0].capital));
+
   } catch (err) {
     console.error(`${err.message}`);
   }
-  // Finally
-  console.log(".finally()");
-})();
+}
+
+get3Country("portugal","canada","tanzania")
