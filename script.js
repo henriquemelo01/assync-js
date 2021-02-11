@@ -459,3 +459,41 @@ createImage("/img/img-1.jpg")
   })
   .then(() => currentImg.style.display = "none")
   .catch((err) => imagesContainer.insertAdjacentText('beforeend', `${err}`));
+
+  // NO ES2017, foi adicionado uma nova feature ao js que facilita o processo de consumir novas promisses - async await 
+
+
+  // É uma função que é executada de forma assincrona que automaticante retorna uma promisse 
+// Obs: await [Promisse que deseja retornar ]
+
+  // async await is a syntatic sugar of then method 
+  /*
+    fetch("Api Endpoint").then((response) => console.log(response))
+  */
+
+
+  const getPosition2 = async function () {
+    return new Promise(function (resolve,reject) {
+      // if the request be sucessed the first callback will receive the position object
+      navigator.geolocation.getCurrentPosition(resolve,reject);
+    })
+  }
+
+
+
+  const whereAmIAsync = async function () {
+    const {coords} = await getPosition2();
+    const { latitude : lat,longitude: lng } = coords;
+    console.log(lat,lng);
+    // await wait for the result of this promisse - stop execution until the promisse is returned
+    const response = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+    const dataGeo = await response.json();
+    const dataCountry = await fetch(`https://restcountries.eu/rest/v2/name/${dataGeo.country}`);
+    const [responseCountry] = await dataCountry.json()
+    renderContries(responseCountry);
+
+    
+  }
+
+whereAmIAsync();
+
