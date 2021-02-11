@@ -425,40 +425,40 @@ otherwise images load too fast
 
 */
 
-const createImage = function (imgPath) {
-  return new Promise(function (resolve,reject) {
-    const img = document.createElement('img');
-    img.src = `${imgPath}`; // async 
+// const createImage = function (imgPath) {
+//   return new Promise(function (resolve,reject) {
+//     const img = document.createElement('img');
+//     img.src = `${imgPath}`; // async 
 
-    //Load Event 
-    img.addEventListener("load", function () {
-      imagesContainer.append(img);
-      resolve(img);
-    })
+//     //Load Event 
+//     img.addEventListener("load", function () {
+//       imagesContainer.append(img);
+//       resolve(img);
+//     })
     
-    // Loading error event
-    img.addEventListener("error", function () {
-      reject(new Error("Image not found 💩"));
-    })
-  })
-}
+//     // Loading error event
+//     img.addEventListener("error", function () {
+//       reject(new Error("Image not found 💩"));
+//     })
+//   })
+// }
 
-let currentImg 
-createImage("/img/img-1.jpg")
-  .then((img) => {
-    currentImg = img;
-    return wait(2)
-  })
-  .then(() => {
-    currentImg.style.display = "none";
-    return createImage("img/img-2.jpg");
-  })
-  .then((img) => {
-    currentImg = img;
-    return wait(2);
-  })
-  .then(() => currentImg.style.display = "none")
-  .catch((err) => imagesContainer.insertAdjacentText('beforeend', `${err}`));
+// let currentImg 
+// createImage("/img/img-1.jpg")
+//   .then((img) => {
+//     currentImg = img;
+//     return wait(2)
+//   })
+//   .then(() => {
+//     currentImg.style.display = "none";
+//     return createImage("img/img-2.jpg");
+//   })
+//   .then((img) => {
+//     currentImg = img;
+//     return wait(2);
+//   })
+//   .then(() => currentImg.style.display = "none")
+//   .catch((err) => imagesContainer.insertAdjacentText('beforeend', `${err}`));
 
   // NO ES2017, foi adicionado uma nova feature ao js que facilita o processo de consumir novas promisses - async await 
 
@@ -471,7 +471,6 @@ createImage("/img/img-1.jpg")
     fetch("Api Endpoint").then((response) => console.log(response))
   */
 
-
   const getPosition2 = async function () {
     return new Promise(function (resolve,reject) {
       // if the request be sucessed the first callback will receive the position object
@@ -482,18 +481,45 @@ createImage("/img/img-1.jpg")
 
 
   const whereAmIAsync = async function () {
-    const {coords} = await getPosition2();
-    const { latitude : lat,longitude: lng } = coords;
-    console.log(lat,lng);
-    // await wait for the result of this promisse - stop execution until the promisse is returned
-    const response = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-    const dataGeo = await response.json();
-    const dataCountry = await fetch(`https://restcountries.eu/rest/v2/name/${dataGeo.country}`);
-    const [responseCountry] = await dataCountry.json()
-    renderContries(responseCountry);
+    try {
+      const {coords} = await getPosition2();
+      const { latitude : lat,longitude: lng } = coords;
+  
+      // await wait for the result of this promisse - stop execution until the promisse is returned
+  
+      //  Geocoding
+      const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+      if (!resGeo.ok) 
+        throw new Error("Failed to get the data of geocode api")
+      if (resGeo.status === 403)
+        throw  new Error("Teste")
+      const dataGeo = await resGeo.json();
 
-    
+
+  
+      // Rest Country API
+      const dataCountry = await fetch(`https://restcountries.eu/rest/v2/name/${dataGeo.country}`);
+      if (!resGeo.ok) 
+        throw new Error("Failed to get the data of rest countries api");
+      const [responseCountry] = await dataCountry.json()
+      renderContries(responseCountry);
+    } catch (err) {
+      console.error(err.message);
+      renderError(`${err.message}`)
+    }
+
   }
 
-whereAmIAsync();
 
+// catch has acess to every error that ocorred in the try block . 
+/*
+try {
+  const y = 3;
+  y = 10; 
+
+  
+} catch (err) {
+  alert(err.message);
+}
+
+*/
