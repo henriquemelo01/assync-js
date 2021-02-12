@@ -538,6 +538,8 @@ otherwise images load too fast
 
 // Running promises in parallel :
 
+// Promise.all ***
+
 const get3Country = async function (c1,c2,c3) {
   try {
     // Como uma requisição não depende da outra, não faz sentido acessar os dados da forma abaixo
@@ -560,4 +562,50 @@ const get3Country = async function (c1,c2,c3) {
   }
 }
 
-get3Country("portugal","canada","tanzania")
+// get3Country("portugal","canada","tanzania")
+
+// Promise.race -> Receives an array of promises and return a promise if a promise is rejected or fullfilled, ou seja, the async operation that will be finished first is going to be the return of Promise.race.  
+
+const promisseRace = async function () {
+  const response = await Promise.race([getJSON(`https://restcountries.eu/rest/v2/name/usa`),getJSON(`https://restcountries.eu/rest/v2/name/mexico`),getJSON(`https://restcountries.eu/rest/v2/name/canada`)]);
+  console.log(response[0]);
+}
+
+promisseRace();
+
+const timeout = function (sec) {
+  return new Promise(function (_,reject) {
+    setTimeout(function () {
+      reject(new Error("Request took too long!"));
+    },sec*1000);
+  });
+};
+
+// Promise.race é utilizada para retornar uma msg de timeout quando uma promise demorar muito tempo para retornar **
+Promise.race([
+  getJSON(`https://restcountries.eu/rest/v2/name/tanzania`),
+  timeout(1)
+]).then(res => {
+  const [data] = res;
+  console.log(data);
+}).catch(err => console.error(err.message));
+
+// Promise.allSettled -> ES2020 // Receives an array that contains promisses and return an array with the results of async operation, no matter if one of the request was reject. (#Promise.all that will short circuit if one of the request was reject).
+
+Promise.allSettled([
+  Promise.resolve("Success"),
+  Promise.reject("ERROR"),
+  Promise.resolve("Another Success"),
+])
+  .then(res => console.log(res))
+  .catch(err => console.error(err));
+
+  // Promise.any [ES2021] -> Return the first fullfilled promise and it will simply ignore rejected promises 
+
+  Promise.any([
+    Promise.resolve("Success"),
+    Promise.reject("ERROR"),
+    Promise.resolve("Another Success"),
+  ])
+    .then(res => console.log(res))
+    .catch(err => console.error(err));
