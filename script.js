@@ -556,7 +556,7 @@ const get3Country = async function (c1,c2,c3) {
     console.log(data.map(d => d[0].capital));
 
   } catch (err) {
-    console.error(`${err.message}`);
+    console.error(`Error message: ${err.message}`);
   }
 }
 
