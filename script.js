@@ -2,7 +2,7 @@
 
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
-const imagesContainer = document.querySelector(".images");
+const imagesContainer = document.querySelector('.images');
 
 const renderContries = function (data, countryName) {
   const html = `
@@ -233,12 +233,10 @@ Test data:
 
 // build a function 'whereAmI' which renders a country only based on GPS coordinates.
 
-
-
 // const whereAmI = function (lat, long) {
 
 //   const coords = [lat,long];
- 
+
 //   // fetch data
 //   fetch(`https://geocode.xyz/${coords}?geoit=json`)
 //     .then((response) => {
@@ -246,9 +244,9 @@ Test data:
 //           throw new Error(`You are reloading the page soo fast : ${response.status}`)
 
 //         if (!response.ok)
-//           throw new Error(`Cannot found the current location : ${response.status}`);  
+//           throw new Error(`Cannot found the current location : ${response.status}`);
 
-//         // Como response é o body do HTML request , converte-se o JSON em objeto usando o metodo .json() 
+//         // Como response é o body do HTML request , converte-se o JSON em objeto usando o metodo .json()
 //         return response.json();
 //     })
 //     .then((data) => {
@@ -272,20 +270,20 @@ Test data:
 // whereAmI(19.037, 72.873);
 // whereAmI(-33.933, 18.474);
 
-// Geolocation API 
+// Geolocation API
 
 // setTimeout(() => {
 //   navigator.geolocation.getCurrentPosition((geolocation) => {
 
 //     const {latitude,longitude} = geolocation.coords;
 //     whereAmI(latitude,longitude);
-  
+
 //   }, () => alert("Error"))
 // },2000)
 
-// Assyncronos Behind the scenes: 
+// Assyncronos Behind the scenes:
 
-// Events: Event Handler (Callback) -> Web API's enviroment -> Quando a operação assincrona é finaliza -> CallBack Queue -> (CallStack === "") ? Event Handler da Callback Queue -> Call Stack (Execução) : Wait call stack to be empty 
+// Events: Event Handler (Callback) -> Web API's enviroment -> Quando a operação assincrona é finaliza -> CallBack Queue -> (CallStack === "") ? Event Handler da Callback Queue -> Call Stack (Execução) : Wait call stack to be empty
 
 // AJAX : AJAX CALLS -> Web API's enviroment -> Quando a operação assincrona é finaliza -> Microtasks Queue -> (CallStack === "") ? AJAX operation da Microtasks Queue -> Call Stack (Execução) : Wait call stack to be empty
 
@@ -300,31 +298,30 @@ Test data:
 // Promise.resolve("Resolved promise 1").then(res => console.log(res)); //3
 // console.log("Test end"); // 2
 
-// Ex: Como as microtask serão executadas como prioridade, ao utilizarmos o setTimeout que esta na Callback Queue ele pode ser executado após o tempo passado como parâmetro caso a microtask exija um tempo considerável para ser executada 
+// Ex: Como as microtask serão executadas como prioridade, ao utilizarmos o setTimeout que esta na Callback Queue ele pode ser executado após o tempo passado como parâmetro caso a microtask exija um tempo considerável para ser executada
 
 // setTimeout(() => console.log("0 sec timer"),0); // delay de +- 1 sec
 // Promise.resolve("Resolved promise").then((res) => {
 //   for(let i = 0; i < 1000000000 ; i++) {}
 // })
 
-// Building Promises 
+// Building Promises
 
-const lotteryPromise = new Promise(function (resolve,reject) {
+const lotteryPromise = new Promise(function (resolve, reject) {
   // Executor function -> Defini o comportamento do resultado da operação async
 
-  console.log("Lotter draw is happening 🔮")
+  console.log('Lotter draw is happening 🔮');
   // Aplicando comportamento Async a promise
-  setTimeout( function () {
-    if(Math.random() >= 0.5) {
+  setTimeout(function () {
+    if (Math.random() >= 0.5) {
       // Promise fullfiled
-      resolve("You win 💰")
+      resolve('You win 💰');
     } else {
       // Promise Rejected
-      reject(new Error("You lost your money 💩")) // <- err 
+      reject(new Error('You lost your money 💩')); // <- err
     }
-  }, 2000)
-  
-})
+  }, 2000);
+});
 
 lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
 
@@ -337,57 +334,62 @@ const wait = function (sec) {
 };
 
 wait(2).then(() => {
-  console.log("I waited for 2 seconds");
-})
+  console.log('I waited for 2 seconds');
+});
 
-console.log("I wil be executed first")
+console.log('I wil be executed first');
 
-// Promisifying the Geolocation API 
+// Promisifying the Geolocation API
 const getPosition = function () {
   return new Promise(function (resolve, reject) {
     // navigator.geolocation.getCurrentPosition(
     //   position => resolve(position),
     //   err => reject(err)
     // )
-    navigator.geolocation.getCurrentPosition(resolve,reject);
-  })
-}
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
 
 const whereAmI = function () {
-
-  getPosition().then((pos) => {
-    const {latitude: lat , longitude : lng} = pos.coords
-    return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
-  })
-    .then((response) => {
-        if (response.status === 403)
-          throw new Error(`You are reloading the page soo fast : ${response.status}`)
-
-        if (!response.ok)
-          throw new Error(`Cannot found the current location : ${response.status}`);  
-
-        // Como response é o body do HTML request , converte-se o JSON em objeto usando o metodo .json() 
-        return response.json();
+  getPosition()
+    .then(pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
     })
-    .then((data) => {
+    .then(response => {
+      if (response.status === 403)
+        throw new Error(
+          `You are reloading the page soo fast : ${response.status}`
+        );
+
+      if (!response.ok)
+        throw new Error(
+          `Cannot found the current location : ${response.status}`
+        );
+
+      // Como response é o body do HTML request , converte-se o JSON em objeto usando o metodo .json()
+      return response.json();
+    })
+    .then(data => {
       // console.log(data);
-      console.log(`You are in ${data.city}, ${data.country}`)
-      return fetch(`https://restcountries.eu/rest/v2/name/${data.country}?fullText=true`)
+      console.log(`You are in ${data.city}, ${data.country}`);
+      return fetch(
+        `https://restcountries.eu/rest/v2/name/${data.country}?fullText=true`
+      );
     })
-    .then((res) => {
-      if(!res.ok)
+    .then(res => {
+      if (!res.ok)
         throw new Error(`Cannot found the current location: ${res.status}`);
-      return res.json()
+      return res.json();
     })
-    .then((data) => {
+    .then(data => {
       const [country] = data;
-      renderContries(country, "");
+      renderContries(country, '');
     })
-    .catch((err) => console.log(`Something went wrong 💣💣 : ${err.message}`));
-}
+    .catch(err => console.log(`Something went wrong 💣💣 : ${err.message}`));
+};
 
-btn.addEventListener("click",whereAmI)
-
+btn.addEventListener('click', whereAmI);
 
 ///////////////////////////////////
 
@@ -428,14 +430,14 @@ otherwise images load too fast
 // const createImage = function (imgPath) {
 //   return new Promise(function (resolve,reject) {
 //     const img = document.createElement('img');
-//     img.src = `${imgPath}`; // async 
+//     img.src = `${imgPath}`; // async
 
-//     //Load Event 
+//     //Load Event
 //     img.addEventListener("load", function () {
 //       imagesContainer.append(img);
 //       resolve(img);
 //     })
-    
+
 //     // Loading error event
 //     img.addEventListener("error", function () {
 //       reject(new Error("Image not found 💩"));
@@ -443,7 +445,7 @@ otherwise images load too fast
 //   })
 // }
 
-// let currentImg 
+// let currentImg
 // createImage("/img/img-1.jpg")
 //   .then((img) => {
 //     currentImg = img;
@@ -460,64 +462,65 @@ otherwise images load too fast
 //   .then(() => currentImg.style.display = "none")
 //   .catch((err) => imagesContainer.insertAdjacentText('beforeend', `${err}`));
 
-  // NO ES2017, foi adicionado uma nova feature ao js que facilita o processo de consumir novas promisses - async await 
+// NO ES2017, foi adicionado uma nova feature ao js que facilita o processo de consumir novas promisses - async await
 
-
-  // É uma função que é executada de forma assincrona que automaticante retorna uma promisse 
+// É uma função que é executada de forma assincrona que automaticante retorna uma promisse
 // Obs: await [Promisse que deseja retornar ]
 
-  // async await is a syntatic sugar of then method 
-  /*
+// async await is a syntatic sugar of then method
+/*
     fetch("Api Endpoint").then((response) => console.log(response))
+
+    (async function () {
+      const apiResponse = await fetch("API EndPoint");
+      // Código abaixo só sera executado após finalizada a operação async 
+      console.log(apiResponse); 
+    }) ();
+    
   */
 
-  const getPosition2 = async function () {
-    return new Promise(function (resolve,reject) {
-      // if the request be sucessed the first callback will receive the position object
-      navigator.geolocation.getCurrentPosition(resolve,reject);
-    })
+const getPosition2 = async function () {
+  return new Promise(function (resolve, reject) {
+    // if the request be sucessed the first callback will receive the position object
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+// async function always return a promisse
+const whereAmIAsync = async function () {
+  try {
+    const { coords } = await getPosition2();
+    const { latitude: lat, longitude: lng } = coords;
+
+    // await wait for the result of this promisse - stop execution until the promisse is returned
+
+    //  Geocoding
+    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+    if (!resGeo.ok) throw new Error('Failed to get the data of geocode api');
+    if (resGeo.status === 403) throw new Error('Teste');
+    const dataGeo = await resGeo.json();
+
+    // Rest Country API
+    const dataCountry = await fetch(
+      `https://restcountries.eu/rest/v2/name/${dataGeo.country}`
+    );
+    if (!resGeo.ok)
+      throw new Error('Failed to get the data of rest countries api');
+    const [responseCountry] = await dataCountry.json();
+    renderContries(responseCountry);
+    return `You are in ${dataGeo.city}, ${dataGeo.country}`;
+
+    // catch has acess to every error that ocorred in the try block .
+  } catch (err) {
+    console.error(err.message);
+    renderError(`${err.message}`);
+
+    // Reject promise returned from async function
+    throw err;
   }
+};
 
-
-// async function always return a promisse 
-  const whereAmIAsync = async function () {
-    try {
-      const {coords} = await getPosition2();
-      const { latitude : lat,longitude: lng } = coords;
-  
-      // await wait for the result of this promisse - stop execution until the promisse is returned
-  
-      //  Geocoding
-      const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-      if (!resGeo.ok) 
-        throw new Error("Failed to get the data of geocode api")
-      if (resGeo.status === 403)
-        throw  new Error("Teste")
-      const dataGeo = await resGeo.json();
-
-
-  
-      // Rest Country API
-      const dataCountry = await fetch(`https://restcountries.eu/rest/v2/name/${dataGeo.country}`);
-      if (!resGeo.ok) 
-        throw new Error("Failed to get the data of rest countries api");
-      const [responseCountry] = await dataCountry.json()
-      renderContries(responseCountry);
-      return `You are in ${dataGeo.city}, ${dataGeo.country}`;
-
-      // catch has acess to every error that ocorred in the try block . 
-
-    } catch (err) {
-      console.error(err.message);
-      renderError(`${err.message}`)
-
-      // Reject promise returned from async function 
-      throw err;
-    }
-
-  }
-
-// Obs: Mesmo se houver um erro na async function e a promise não for preenchida, o then é executado. Assim add throw error ao catch para corrigir o problema. 
+// Obs: Mesmo se houver um erro na async function e a promise não for preenchida, o then é executado. Assim add throw error ao catch para corrigir o problema.
 // whereAmIAsync()
 //   .then(city => console.log(city))
 //   .catch(err => console.error(`${err.message}`))
@@ -535,82 +538,90 @@ otherwise images load too fast
 //   console.log(".finally()");
 // })();
 
-
 // Running promises in parallel :
 
 // Promise.all ***
 
-const get3Country = async function (c1,c2,c3) {
+const get3Country = async function (c1, c2, c3) {
   try {
     // Como uma requisição não depende da outra, não faz sentido acessar os dados da forma abaixo
     // const [data1] = await getJSON(`https://restcountries.eu/rest/v2/name/${c1}`);
     // const [data2] = await getJSON(`https://restcountries.eu/rest/v2/name/${c2}`)
     // const [data3] = await getJSON(`https://restcountries.eu/rest/v2/name/${c3}`)
 
-    // O metodo .all do constructor Promise recebe um array que contém promises e retorna uma nova promise que irá executar de forma paralela todas as promises contidas no array e preenche a promise retornada com a resposta das promises. 
+    // O metodo .all do constructor Promise recebe um array que contém promises e retorna uma nova promise que irá executar de forma paralela todas as promises contidas no array e preenche a promise retornada com a resposta das promises - .
 
-    const data = await Promise.all([getJSON(`https://restcountries.eu/rest/v2/name/${c1}`), getJSON(`https://restcountries.eu/rest/v2/name/${c2}`), getJSON(`https://restcountries.eu/rest/v2/name/${c3}`)]);
+    const data = await Promise.all([
+      getJSON(`https://restcountries.eu/rest/v2/name/${c1}`),
+      getJSON(`https://restcountries.eu/rest/v2/name/${c2}`),
+      getJSON(`https://restcountries.eu/rest/v2/name/${c3}`),
+    ]);
 
     // Obtendo os Dados usando destructuring
     // const [[data1],[data2],[data3]] = data;
 
     // Obtendo os dados usando map
     console.log(data.map(d => d[0].capital));
-
   } catch (err) {
     console.error(`Error message: ${err.message}`);
   }
-}
+};
 
 // get3Country("portugal","canada","tanzania")
 
-// Promise.race -> Receives an array of promises and return a promise if a promise is rejected or fullfilled, ou seja, the async operation that will be finished first is going to be the return of Promise.race.  
+// Promise.race -> Receives an array of promises and return a promise if a promise is rejected or fullfilled, ou seja, the async operation that will be finished first is going to be the return of Promise.race.
 
 const promisseRace = async function () {
-  const response = await Promise.race([getJSON(`https://restcountries.eu/rest/v2/name/usa`),getJSON(`https://restcountries.eu/rest/v2/name/mexico`),getJSON(`https://restcountries.eu/rest/v2/name/canada`)]);
+  const response = await Promise.race([
+    getJSON(`https://restcountries.eu/rest/v2/name/usa`),
+    getJSON(`https://restcountries.eu/rest/v2/name/mexico`),
+    getJSON(`https://restcountries.eu/rest/v2/name/canada`),
+  ]);
   console.log(response[0]);
-}
+};
 
 promisseRace();
 
 const timeout = function (sec) {
-  return new Promise(function (_,reject) {
+  return new Promise(function (_, reject) {
     setTimeout(function () {
-      reject(new Error("Request took too long!"));
-    },sec*1000);
+      reject(new Error('Request took too long!'));
+    }, sec * 1000);
   });
 };
 
 // Promise.race é utilizada para retornar uma msg de timeout quando uma promise demorar muito tempo para retornar **
 Promise.race([
   getJSON(`https://restcountries.eu/rest/v2/name/tanzania`),
-  timeout(1)
-]).then(res => {
-  const [data] = res;
-  console.log(data);
-}).catch(err => console.error(err.message));
+  timeout(1),
+])
+  .then(res => {
+    const [data] = res;
+    console.log(data);
+  })
+  .catch(err => console.error(err.message));
 
 // Promise.allSettled -> ES2020 // Receives an array that contains promisses and return an array with the results of async operation, no matter if one of the request was reject. (#Promise.all that will short circuit if one of the request was reject).
 
 Promise.allSettled([
-  Promise.resolve("Success"),
-  Promise.reject("ERROR"),
-  Promise.resolve("Another Success"),
+  Promise.resolve('Success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another Success'),
 ])
   .then(res => console.log(res))
   .catch(err => console.error(err));
 
-  // Promise.any [ES2021] -> Return the first fullfilled promise and it will simply ignore rejected promises 
+// Promise.any [ES2021] -> Return the first fullfilled promise and it will simply ignore rejected promises
 
-  Promise.any([
-    Promise.resolve("Success"),
-    Promise.reject("ERROR"),
-    Promise.resolve("Another Success"),
-  ])
-    .then(res => console.log(res))
-    .catch(err => console.error(err));
+Promise.any([
+  Promise.resolve('Success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another Success'),
+])
+  .then(res => console.log(res))
+  .catch(err => console.error(err));
 
- ////////////////////////////////////////////
+////////////////////////////////////////////
 
 // Coding Challenge #3
 /*
@@ -640,14 +651,14 @@ Test data Part 2: ['img/img-1.jpg', 'img/img-2.jpg', 'img/img3.jpg']. To test, t
 // const createImage = function (imgPath) {
 //   return new Promise(function (resolve,reject) {
 //     const img = document.createElement('img');
-//     img.src = `${imgPath}`; // async 
+//     img.src = `${imgPath}`; // async
 
-//     //Load Event 
+//     //Load Event
 //     img.addEventListener("load", function () {
 //       imagesContainer.append(img);
 //       resolve(img);
 //     })
-    
+
 //     // Loading error event
 //     img.addEventListener("error", function () {
 //       reject(new Error("Image not found 💩"));
@@ -655,37 +666,36 @@ Test data Part 2: ['img/img-1.jpg', 'img/img-2.jpg', 'img/img3.jpg']. To test, t
 //   })
 // }
 
-
 const createImage = function (imgPath) {
-  return new Promise(function (resolve,reject) {
+  return new Promise(function (resolve, reject) {
     const img = document.createElement('img');
-    img.src = `${imgPath}`; // async 
+    img.src = `${imgPath}`; // async
 
-    //Load Event 
-    img.addEventListener("load", function () {
+    //Load Event
+    img.addEventListener('load', function () {
       imagesContainer.append(img);
       resolve(img);
-    })
-    
-    // Loading error event
-    img.addEventListener("error", function () {
-      reject(new Error("Image not found 💩"));
-    })
-  })
-}
+    });
 
-// let currentImg 
+    // Loading error event
+    img.addEventListener('error', function () {
+      reject(new Error('Image not found 💩'));
+    });
+  });
+};
+
+// let currentImg
 
 // const loadNPause = async function (pathImg1,pathImg2) {
 //   try {
 //     // Load Img 1
 //     let img = await createImage(pathImg1);
-//     console.log("Image 1 loaded"); 
+//     console.log("Image 1 loaded");
 //     // Como a função wait não retorna nada, não é necessário armazena-la em uma variavel. Além disso, lembre-se que ao utilizarmos await o código abaixo não é executado até que a operação seja finalizada
 //     await wait(2);
 //     img.style.display = "none";
 
-//     // Load Image 2 
+//     // Load Image 2
 //     img = await createImage(pathImg2);
 //     console.log("Image 2 loaded");
 //     await wait(2);
@@ -694,7 +704,7 @@ const createImage = function (imgPath) {
 //   } catch (err) {
 //     imagesContainer.insertAdjacentText('beforeend', `${err}`);
 //   }
- 
+
 // }
 // loadNPause("/img/img-1.jpg","/img/img-2.jpg");
 
@@ -713,15 +723,21 @@ Test data Part 2: ['img/img-1.jpg', 'img/img-2.jpg', 'img/img3.jpg']. To test, t
 // Receives an array
 const loadAll = async function (imgArr) {
   try {
-    const images = await Promise.all(imgArr.map(async img => await createImage(img) ))
+    const images = await Promise.all(
+      imgArr.map(async img => await createImage(img))
+    );
     // promise.all -> returns the body of promise
     console.log(images);
     images.forEach(img => console.log(img));
-    images.forEach(img => img.classList.add("parallel"));
+    images.forEach(img => img.classList.add('parallel'));
   } catch (err) {
     console.error(err);
   }
-}
+};
 
-const imgPaths = ["/img/img-1.jpg","/img/img-2.jpg","/img/img-3.jpg"];
+const imgPaths = ['/img/img-1.jpg', '/img/img-2.jpg', '/img/img-3.jpg'];
 loadAll(imgPaths);
+
+////////////////////////////////
+
+// Transpaling Settings
